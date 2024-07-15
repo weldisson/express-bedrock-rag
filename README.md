@@ -19,6 +19,8 @@ cd file-to-gpt
 
 ### Set Up Environment Variables
 
+Copy the example file and make sure to modify the .env file with your specific configurations afterward.
+
 ```sh
 cp .env.example .env
 ```
