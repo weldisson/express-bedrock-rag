@@ -1,10 +1,10 @@
 import "dotenv/config";
+import path from "node:path";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import { routers } from "./Routes";
 import logger from "./interfaces/helpers/Logger";
-import path from "node:path";
 
 const app = express();
 const port = Number(process.env.PORT) || 3000;
@@ -17,7 +17,7 @@ routers(app);
 app.disable("x-powered-by");
 
 app.listen(port, () => {
-  logger.info(`API listening at http://localhost:${port}`);
+	logger.info(`API listening at http://localhost:${port}`);
 });
 
 export default app;

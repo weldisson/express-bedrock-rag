@@ -1,3 +1,3 @@
 export interface FilesRepositoryDomain {
-  readFile(filePath: string): Promise<string>;
+	readFile(filePath: string): Promise<string>;
 }
