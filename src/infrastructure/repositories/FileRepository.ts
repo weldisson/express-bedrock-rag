@@ -8,17 +8,22 @@ import FileModel from "../models/FileModel";
 // const loader = new WebPDFLoader(blob);
 
 export class FileRepository implements FilesRepositoryDomain {
-	fileModel: FileModel;
-	constructor() {
-		this.fileModel = new FileModel();
-	}
-	async getFiles() {
-		await this.fileModel.findAll();
-	}
-	async readFile() {
-		const loader = new PDFLoader("./example.pdf");
+  fileModel: FileModel;
+  constructor() {
+    this.fileModel = new FileModel();
+  }
 
-		const docs = await loader.load();
-		logger.info(docs[0].pageContent);
-	}
+  async readFile(filePath: string): Promise<string> {
+    try {
+      if (filePath === "") throw new Error("filePath could not be empty");
+
+      const loader = new PDFLoader(filePath);
+
+      const docs = await loader.load();
+      logger.info(docs[0].pageContent);
+      return docs[0].pageContent;
+    } catch (error) {
+      throw new Error("Failed to read file");
+    }
+  }
 }
