@@ -1,11 +1,17 @@
 version: "3.8"
 
 services:
-    app:
-        build: .
-        ports:
-            - "3000:3000"
-        environment:
-            PORT: 3000
+  db:
+    image: ankane/pgvector
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      - POSTGRES_DB=langchain
+      - POSTGRES_USER=langchain
+      - POSTGRES_PASSWORD=langchain
+    volumes:
+      - postgres_data_pgvector:/var/lib/postgresql/data
 
 volumes:
+  postgres_data_pgvector:

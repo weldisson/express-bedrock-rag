@@ -1,29 +1,99 @@
+import "dotenv/config";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import type { FilesRepositoryDomain } from "../../domain/FilesRepository";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import {
+  type DistanceStrategy,
+  PGVectorStore,
+} from "@langchain/community/vectorstores/pgvector";
+import type { PoolConfig } from "pg";
+
+import type {
+  FilesRepositoryDomain,
+  Metadata,
+} from "../../domain/FilesRepository";
 import logger from "../../interfaces/helpers/Logger";
 import FileModel from "../models/FileModel";
-// Or, in web environments:
-// import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
-// const blob = new Blob(); // e.g. from a file input
-// const loader = new WebPDFLoader(blob);
+import type { Document, DocumentInterface } from "@langchain/core/documents";
+import { BedrockProvider } from "../providers/BedRockProvider";
 
 export class FileRepository implements FilesRepositoryDomain {
-	fileModel: FileModel;
-	constructor() {
-		this.fileModel = new FileModel();
-	}
+  fileModel: FileModel;
+  bedrockProvider: BedrockProvider;
+  pgVectorConfig;
 
-	async readFile(filePath: string): Promise<string> {
-		try {
-			if (filePath === "") throw new Error("filePath could not be empty");
+  constructor() {
+    this.fileModel = new FileModel();
+    this.bedrockProvider = new BedrockProvider();
+    this.pgVectorConfig = {
+      postgresConnectionOptions: {
+        type: "postgres",
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_HOST),
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE,
+      } as PoolConfig,
+      tableName: "embeddings",
+      columns: {
+        idColumnName: "id",
+        vectorColumnName: "vector",
+        contentColumnName: "content",
+        metadataColumnName: "metadata",
+      },
+      distanceStrategy: "cosine" as DistanceStrategy,
+    };
+  }
 
-			const loader = new PDFLoader(filePath);
+  async addDocuments(
+    docs: Array<{ pageContent: string; metadata: Metadata; vector: number[] }>
+  ): Promise<void> {
+    try {
+      const pgVectorStore = await PGVectorStore.initialize(
+        this.bedrockProvider.embedding(),
+        this.pgVectorConfig
+      );
 
-			const docs = await loader.load();
-			logger.info(docs[0].pageContent);
-			return docs[0].pageContent;
-		} catch (error) {
-			throw new Error("Failed to read file");
-		}
-	}
+      await pgVectorStore.addDocuments(docs);
+      await pgVectorStore.end();
+    } catch (error) {
+      logger.error(error);
+      throw new Error("error on FileRepository > addDocuments");
+    }
+  }
+  async similaritySearch(term: string): Promise<DocumentInterface[]> {
+    try {
+      const pgVectorStore = await PGVectorStore.initialize(
+        this.bedrockProvider.embedding(),
+        this.pgVectorConfig
+      );
+
+      const result = await pgVectorStore.similaritySearch(term, 1);
+      await pgVectorStore.end();
+
+      return result;
+    } catch (error) {
+      logger.error(error);
+      throw new Error("error on FileRepository > similaritySearch");
+    }
+  }
+
+  async readFiles(filePath: string): Promise<Document[]> {
+    try {
+      if (filePath.length === 0)
+        throw new Error("filePaths array could not be empty");
+
+      const loader = new PDFLoader(filePath);
+      const docs = await loader.load();
+      const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 1500,
+        chunkOverlap: 100,
+      });
+      const documents = await splitter.splitDocuments(docs);
+
+      return documents;
+    } catch (error) {
+      logger.error(error);
+      throw new Error("error on FileRepository > readFiles");
+    }
+  }
 }
