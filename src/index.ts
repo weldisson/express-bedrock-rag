@@ -18,7 +18,7 @@ routes.initialize(app);
 app.disable("x-powered-by");
 
 app.listen(port, () => {
-  logger.info(`API listening at http://localhost:${port}`);
+	logger.info(`API listening at http://localhost:${port}`);
 });
 
 export default app;

@@ -1,19 +1,19 @@
 import "dotenv/config";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import {
   type DistanceStrategy,
   PGVectorStore,
 } from "@langchain/community/vectorstores/pgvector";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import type { PoolConfig } from "pg";
 
+import type { Document, DocumentInterface } from "@langchain/core/documents";
 import type {
   FilesRepositoryDomain,
   Metadata,
 } from "../../domain/FilesRepository";
 import logger from "../../interfaces/helpers/Logger";
 import FileModel from "../models/FileModel";
-import type { Document, DocumentInterface } from "@langchain/core/documents";
 import { BedrockProvider } from "../providers/BedRockProvider";
 
 export class FileRepository implements FilesRepositoryDomain {
@@ -60,14 +60,14 @@ export class FileRepository implements FilesRepositoryDomain {
       throw new Error("error on FileRepository > addDocuments");
     }
   }
-  async similaritySearch(term: string): Promise<DocumentInterface[]> {
+  async similaritySearch(term: string, topK: number): Promise<DocumentInterface[]> {
     try {
       const pgVectorStore = await PGVectorStore.initialize(
         this.bedrockProvider.embedding(),
         this.pgVectorConfig
       );
 
-      const result = await pgVectorStore.similaritySearch(term, 1);
+      const result = await pgVectorStore.similaritySearch(term, topK);
       await pgVectorStore.end();
 
       return result;

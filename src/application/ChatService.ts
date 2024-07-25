@@ -1,9 +1,10 @@
 import type { Readable } from "node:stream";
+import type { Document } from "@langchain/core/documents";
 import type { FilesRepositoryDomain } from "../domain/FilesRepository";
 import { BedrockProvider } from "../infrastructure/providers/BedRockProvider";
-import logger from "../interfaces/helpers/Logger";
 import { Helpers } from "../interfaces/helpers";
-import type { Document } from "@langchain/core/documents";
+import logger from "../interfaces/helpers/Logger";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 export class ChatService {
   bedrockProvider;
@@ -38,8 +39,18 @@ export class ChatService {
         content,
         systemMessageContext
       );
+      const documents = await this.fileRepository.similaritySearch(content, 5);
+      const relevantContent = documents
+        .map((doc) => `${doc.metadata.filename}: ${doc.pageContent}`)
+        .join("\n");
 
-      return this.helpers.iterableToStream(res);
+      const context = systemMessageContext.replace(
+        "{context}",
+        relevantContent
+      );
+
+      const response = await this.bedrockProvider.chat(content, context);
+      return this.helpers.iterableToStream(response);
     } catch (error) {
       logger.error(error);
       throw new Error("Error on ChatService > create");

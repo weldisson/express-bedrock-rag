@@ -7,5 +7,5 @@ export interface FilesRepositoryDomain {
   addDocuments(
     docs: Array<{ pageContent: string; metadata: Metadata; vector: number[] }>
   ): Promise<void>;
-  similaritySearch(term: string): Promise<DocumentInterface[]>;
+  similaritySearch(term: string, topK: number): Promise<DocumentInterface[]>;
 }

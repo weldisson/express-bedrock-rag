@@ -11,3 +11,11 @@ export const chatSchema = z
     }),
   })
   .openapi({ description: "Schema for chat generate" });
+
+export const fileSchema = z
+  .object({
+    file: z.instanceof(File).refine((file) => file instanceof Blob, {
+      message: "Invalid file format",
+    }),
+  })
+  .openapi({ description: "Put a pdf file", required: ['file'] });
