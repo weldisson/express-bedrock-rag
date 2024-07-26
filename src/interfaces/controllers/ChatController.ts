@@ -37,7 +37,7 @@ export class CurrencyController {
 	registerRoutes(app: express.Application) {
 		app.post("/api/chat", validate(chatSchema), this.chatHandler.bind(this));
 		app.post(
-			"/api/addFile",
+			"/api/upload",
 			upload.single("file"),
 			this.addFileHandler.bind(this),
 		);
@@ -75,7 +75,7 @@ export class CurrencyController {
 			}
 			const filePath = req.file.path;
 
-			const stream = await this.chatService.addFile(filePath);
+			await this.chatService.addFile(filePath);
 
 			res.status(200).json({ success: true });
 		} catch (error) {

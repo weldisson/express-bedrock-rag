@@ -67,8 +67,8 @@ registry.registerPath({
 
 registry.registerPath({
 	method: "post",
-	path: "/api/addFile/",
-	summary: "Add file on rag",
+	path: "/api/upload/",
+	summary: "Add file on RAG",
 	request: {
 		body: requestBody(
 			"form to add new file",

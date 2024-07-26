@@ -1,6 +1,6 @@
 # File to GPT
 
-This project allows you to input files as the source of truth for an AI to base its responses on.
+This is an API that uses LangChain, Bedrock, and Postgres pgvector to provide Recovery-Augmented Generation (RAG) functionality. This project has two main endpoints: one for uploading files to the RAG system and another for interacting with the Claude3 model through AWS Bedrock.
 
 ## Prerequisites
 
@@ -13,8 +13,8 @@ This project allows you to input files as the source of truth for an AI to base 
 ### Clone the Repository
 
 ```sh
-git clone https://github.com/your-username/file-to-gpt.git
-cd file-to-gpt
+git clone https://github.com/your-username/express-bedrock-rag.git
+cd express-bedrock-rag
 ```
 
 ### Set Up Environment Variables
@@ -52,8 +52,8 @@ docker-compose up --build
 Alternatively, you can use Docker directly with the included Dockerfile.
 
 ```sh
-docker build -t file-to-gpt .
-docker run -p 3000:3000 file-to-gpt
+docker build -t express-bedrock-rag .
+docker run -p 3000:3000 express-bedrock-rag
 ```
 
 ## Available Scripts
