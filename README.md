@@ -1,6 +1,6 @@
 # File to GPT
 
-This is an API that uses LangChain, Bedrock, and Postgres pgvector to provide Recovery-Augmented Generation (RAG) functionality. This project has two main endpoints: one for uploading files to the RAG system and another for interacting with the Claude3 model through AWS Bedrock.
+This is an API that uses LangChain, Bedrock, and Postgres pgvector to provide Retrieval Augmented Generation (RAG) functionality. This project has two main endpoints: one for uploading files to the RAG system and another for interacting with the Claude3 model through AWS Bedrock.
 
 ## Prerequisites
 
