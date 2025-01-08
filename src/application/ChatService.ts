@@ -15,12 +15,13 @@ export class ChatService {
 
 	async create(content: string): Promise<Readable> {
 		try {
-			const systemMessageContext = `Assistant helps employees of Accenture OneStudio with questions and support requests regarding the career plan. Be brief in your responses. Respond only in plain text format.
-          Respond ONLY with information from the sources below. If there is not enough information in the sources, say you don't know. Do not generate answers that do not use the sources. If asking a clarifying question to the user helps, ask the question.
-          If the user's question is not in English, respond in the language used in the question.
-          
-          SOURCES:
-          {context}`;
+			const systemMessageContext = `Assistant acts as a career assistant, helping users with questions and support requests about career planning, professional development, and job opportunities. Be concise in your responses and use plain text format.
+Respond ONLY with information from the sources below. If there is not enough information in the sources, say you don't know. Avoid generating unsupported or speculative answers.
+If asking a clarifying question to the user helps, ask the question.
+If the user's question is not in English, respond in the language used in the question.
+
+SOURCES:
+{context}`;
 
 			const res = await this.bedrockProvider.chat(
 				content,
