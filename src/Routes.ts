@@ -2,13 +2,13 @@ import express from "express";
 
 import { ChatService } from "./application/ChatService";
 import { FileRepository } from "./infrastructure/repositories/FileRepository";
-import { CurrencyController } from "./interfaces/controllers/ChatController";
+import { ChatController } from "./interfaces/controllers/ChatController";
 import { setupSwagger } from "./interfaces/validations/Swagger";
 
 export class Routes {
 	private fileRepository: FileRepository;
 	private chatService: ChatService;
-	private chatController: CurrencyController;
+	private chatController: ChatController;
 
 	constructor() {
 		this.fileRepository = new FileRepository();
