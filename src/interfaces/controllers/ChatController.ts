@@ -31,7 +31,7 @@ const upload = multer({
 	},
 });
 
-export class CurrencyController {
+export class ChatController {
 	constructor(private chatService: ChatService) {}
 
 	registerRoutes(app: express.Application) {
